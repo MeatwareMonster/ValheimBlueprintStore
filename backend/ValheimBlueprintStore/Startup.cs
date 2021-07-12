@@ -48,9 +48,12 @@ namespace ValheimBlueprintStore
                 var connUser = userPassSide.Split(":")[0];
                 var connPass = userPassSide.Split(":")[1];
                 var connHost = hostSide.Split("/")[0];
-                var connDb = hostSide.Split("/")[1].Split("?")[0];
+                var connDb = hostSide.Split("/")[1];
+                // Why split on question mark?
+                //var connDb = hostSide.Split("/")[1].Split("?")[0];
 
                 connectionString = $"Host={connHost};User ID={connUser};Password={connPass};Database={connDb};Pooling=true;sslmode=Prefer;Trust Server Certificate=true";
+                Console.WriteLine(connectionString);
             }
 
             services.AddDbContext<ValheimBlueprintStoreContext>(opt => opt.UseNpgsql(connectionString));
