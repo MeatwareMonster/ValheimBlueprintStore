@@ -50,7 +50,7 @@ namespace ValheimBlueprintStore
                 var connHost = hostSide.Split("/")[0];
                 var connDb = hostSide.Split("/")[1].Split("?")[0];
 
-                connectionString = $"server={connHost};Uid={connUser};Pwd={connPass};Database={connDb};sslmode=Prefer;Trust Server Certificate=true";
+                connectionString = $"Host={connHost};User ID={connUser};Password={connPass};Database={connDb};Pooling=true;sslmode=Prefer;Trust Server Certificate=true";
             }
 
             services.AddDbContext<ValheimBlueprintStoreContext>(opt => opt.UseNpgsql(connectionString));
