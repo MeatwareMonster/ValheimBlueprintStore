@@ -33,31 +33,31 @@ namespace ValheimBlueprintStore
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString;
-            //if (_webHostEnvironment.IsDevelopment())
-            //{
-            //    connectionString = Configuration.GetConnectionString("Default");
-            //}
-            //else
-            //{
-            // Use connection string provided at runtime by Heroku.
-
-            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-            var databaseUri = new Uri(databaseUrl);
-            var userInfo = databaseUri.UserInfo.Split(':');
-
-            var builder = new NpgsqlConnectionStringBuilder
+            if (_webHostEnvironment.IsDevelopment())
             {
-                Host = databaseUri.Host,
-                Port = databaseUri.Port,
-                Username = userInfo[0],
-                Password = userInfo[1],
-                Database = databaseUri.LocalPath.TrimStart('/'),
-                SslMode = SslMode.Prefer,
-                TrustServerCertificate = true
-            };
+                connectionString = Configuration.GetConnectionString("default");
+            }
+            else
+            {
+                // Use connection string provided at runtime by Heroku.
 
-            connectionString = builder.ToString();
-            //}
+                var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+                var databaseUri = new Uri(databaseUrl);
+                var userInfo = databaseUri.UserInfo.Split(':');
+
+                var builder = new NpgsqlConnectionStringBuilder
+                {
+                    Host = databaseUri.Host,
+                    Port = databaseUri.Port,
+                    Username = userInfo[0],
+                    Password = userInfo[1],
+                    Database = databaseUri.LocalPath.TrimStart('/'),
+                    SslMode = SslMode.Prefer,
+                    TrustServerCertificate = true
+                };
+
+                connectionString = builder.ToString();
+            }
 
             services.AddDbContext<ValheimBlueprintStoreContext>(opt => opt.UseNpgsql(connectionString));
 
@@ -89,9 +89,10 @@ namespace ValheimBlueprintStore
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ValheimBlueprintStore v1"));
             }
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ValheimBlueprintStore v1"));
 
             app.UseHttpsRedirection();
 
