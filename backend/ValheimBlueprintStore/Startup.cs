@@ -32,31 +32,30 @@ namespace ValheimBlueprintStore
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString;
-            if (_webHostEnvironment.IsDevelopment())
-            {
-                connectionString = Configuration.GetConnectionString("Default");
-            }
-            else
-            {
-                // Use connection string provided at runtime by Heroku.
-                var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            //if (_webHostEnvironment.IsDevelopment())
+            //{
+            //    connectionString = Configuration.GetConnectionString("Default");
+            //}
+            //else
+            //{
+            // Use connection string provided at runtime by Heroku.
+            var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-                connUrl = connUrl.Replace("postgres://", string.Empty);
-                var userPassSide = connUrl.Split("@")[0];
-                var hostSide = connUrl.Split("@")[1];
+            connUrl = connUrl.Replace("postgres://", string.Empty);
+            var userPassSide = connUrl.Split("@")[0];
+            var hostSide = connUrl.Split("@")[1];
 
-                var connUser = userPassSide.Split(":")[0];
-                var connPass = userPassSide.Split(":")[1];
-                var connHost = hostSide.Split("/")[0];
-                var connDb = hostSide.Split("/")[1];
-                // Why split on question mark?
-                //var connDb = hostSide.Split("/")[1].Split("?")[0];
+            var connUser = userPassSide.Split(":")[0];
+            var connPass = userPassSide.Split(":")[1];
+            var connHost = hostSide.Split("/")[0];
+            var connDb = hostSide.Split("/")[1];
+            // Why split on question mark?
+            //var connDb = hostSide.Split("/")[1].Split("?")[0];
 
-                connectionString = $"Host={connHost};User ID={connUser};Password={connPass};Database={connDb};Pooling=true;sslmode=Prefer;Trust Server Certificate=true";
-                Console.WriteLine(connectionString);
-            }
+            connectionString = $"Host={connHost};User ID={connUser};Password={connPass};Database={connDb};Pooling=true;sslmode=Prefer;Trust Server Certificate=true";
+            //}
 
-            services.AddDbContext<ValheimBlueprintStoreContext>(opt => opt.UseNpgsql(connectionString));
+            services.AddDbContext<ValheimBlueprintStoreContext>(opt => opt.UseNpgsql("Host=ec2-52-6-77-239.compute-1.amazonaws.com;User ID=humfbebxxhzqio;Password=ea7834e125b666ec473b45fb53ed30876ce6051fba1fc3bfa575a639632d436a;Database=d4itr3od0676ge;Pooling=true;sslmode=Prefer;Trust Server Certificate=true"));
 
             services.AddControllers();
             services.AddApiVersioning(options =>
