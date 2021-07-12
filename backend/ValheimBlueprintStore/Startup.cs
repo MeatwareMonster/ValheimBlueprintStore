@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -17,9 +18,12 @@ namespace ValheimBlueprintStore
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private IWebHostEnvironment _webHostEnvironment;
+
+        public Startup(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
         {
             Configuration = configuration;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         public IConfiguration Configuration { get; }
@@ -27,7 +31,9 @@ namespace ValheimBlueprintStore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<TodoContext>(opt => opt.UseNpgsql(Configuration.GetConnectionString("Default")));
+            var connectionString = _webHostEnvironment.IsDevelopment() ? Configuration.GetConnectionString("Default") : Environment.GetEnvironmentVariable("DATABASE_URL");
+            services.AddDbContext<ValheimBlueprintStoreContext>(opt => opt.UseNpgsql(connectionString));
+
             services.AddControllers();
             services.AddApiVersioning(options =>
             {
