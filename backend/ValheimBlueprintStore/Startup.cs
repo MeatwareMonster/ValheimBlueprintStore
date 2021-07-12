@@ -32,26 +32,26 @@ namespace ValheimBlueprintStore
         public void ConfigureServices(IServiceCollection services)
         {
             string connectionString;
-            if (_webHostEnvironment.IsDevelopment())
-            {
-                connectionString = Configuration.GetConnectionString("Default");
-            }
-            else
-            {
-                // Use connection string provided at runtime by Heroku.
-                var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            //if (_webHostEnvironment.IsDevelopment())
+            //{
+            //    connectionString = Configuration.GetConnectionString("Default");
+            //}
+            //else
+            //{
+            // Use connection string provided at runtime by Heroku.
+            var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-                connUrl = connUrl.Replace("postgres://", string.Empty);
-                var userPassSide = connUrl.Split("@")[0];
-                var hostSide = connUrl.Split("@")[1];
+            connUrl = connUrl.Replace("postgres://", string.Empty);
+            var userPassSide = connUrl.Split("@")[0];
+            var hostSide = connUrl.Split("@")[1];
 
-                var connUser = userPassSide.Split(":")[0];
-                var connPass = userPassSide.Split(":")[1];
-                var connHost = hostSide.Split("/")[0].Split(":")[0];
-                var connDb = hostSide.Split("/")[1];
+            var connUser = userPassSide.Split(":")[0];
+            var connPass = userPassSide.Split(":")[1];
+            var connHost = hostSide.Split("/")[0].Split(":")[0];
+            var connDb = hostSide.Split("/")[1];
 
-                connectionString = $"Host={connHost};User ID={connUser};Password={connPass};Database={connDb};Pooling=true;sslmode=Prefer;Trust Server Certificate=true";
-            }
+            connectionString = $"Host={connHost};User ID={connUser};Password={connPass};Database={connDb};Pooling=true;sslmode=Prefer;Trust Server Certificate=true";
+            //}
 
             services.AddDbContext<ValheimBlueprintStoreContext>(opt => opt.UseNpgsql(connectionString));
 
