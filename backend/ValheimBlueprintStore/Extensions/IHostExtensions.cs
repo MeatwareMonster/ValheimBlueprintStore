@@ -1,16 +1,16 @@
 ﻿using System;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace ValheimBlueprintStore.Extensions
 {
-    public static class IWebHostExtensions
+    public static class IHostExtensions
     {
-        public static IWebHost MigrateDatabase<T>(this IWebHost webHost) where T : DbContext
+        public static IHost MigrateDatabase<T>(this IHost host) where T : DbContext
         {
-            using (var scope = webHost.Services.CreateScope())
+            using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
                 try
@@ -24,7 +24,7 @@ namespace ValheimBlueprintStore.Extensions
                     logger.LogError(ex, "An error occurred while migrating the database.");
                 }
             }
-            return webHost;
+            return host;
         }
     }
 }
