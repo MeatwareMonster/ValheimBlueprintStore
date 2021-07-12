@@ -11,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
+using Npgsql;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using ValheimBlueprintStore.Models;
 
@@ -39,18 +40,23 @@ namespace ValheimBlueprintStore
             //else
             //{
             // Use connection string provided at runtime by Heroku.
-            var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-            connUrl = connUrl.Replace("postgres://", string.Empty);
-            var userPassSide = connUrl.Split("@")[0];
-            var hostSide = connUrl.Split("@")[1];
+            var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+            var databaseUri = new Uri(databaseUrl);
+            var userInfo = databaseUri.UserInfo.Split(':');
 
-            var connUser = userPassSide.Split(":")[0];
-            var connPass = userPassSide.Split(":")[1];
-            var connHost = hostSide.Split("/")[0].Split(":")[0];
-            var connDb = hostSide.Split("/")[1];
+            var builder = new NpgsqlConnectionStringBuilder
+            {
+                Host = databaseUri.Host,
+                Port = databaseUri.Port,
+                Username = userInfo[0],
+                Password = userInfo[1],
+                Database = databaseUri.LocalPath.TrimStart('/'),
+                SslMode = SslMode.Prefer,
+                TrustServerCertificate = true
+            };
 
-            connectionString = $"Host={connHost};User ID={connUser};Password={connPass};Database={connDb};Pooling=true;sslmode=Prefer;Trust Server Certificate=true";
+            connectionString = builder.ToString();
             //}
 
             services.AddDbContext<ValheimBlueprintStoreContext>(opt => opt.UseNpgsql(connectionString));
