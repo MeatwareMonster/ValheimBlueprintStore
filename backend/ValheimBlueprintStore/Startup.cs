@@ -41,7 +41,7 @@ namespace ValheimBlueprintStore
                 // Use connection string provided at runtime by Heroku.
                 var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 
-                connUrl = connUrl.Replace("mysql://", string.Empty);
+                connUrl = connUrl.Replace("postgres://", string.Empty);
                 var userPassSide = connUrl.Split("@")[0];
                 var hostSide = connUrl.Split("@")[1];
 
