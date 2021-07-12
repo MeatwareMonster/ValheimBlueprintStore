@@ -31,7 +31,28 @@ namespace ValheimBlueprintStore
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString = _webHostEnvironment.IsDevelopment() ? Configuration.GetConnectionString("Default") : Environment.GetEnvironmentVariable("DATABASE_URL");
+            string connectionString;
+            if (_webHostEnvironment.IsDevelopment())
+            {
+                connectionString = Configuration.GetConnectionString("Default");
+            }
+            else
+            {
+                // Use connection string provided at runtime by Heroku.
+                var connUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+
+                connUrl = connUrl.Replace("mysql://", string.Empty);
+                var userPassSide = connUrl.Split("@")[0];
+                var hostSide = connUrl.Split("@")[1];
+
+                var connUser = userPassSide.Split(":")[0];
+                var connPass = userPassSide.Split(":")[1];
+                var connHost = hostSide.Split("/")[0];
+                var connDb = hostSide.Split("/")[1].Split("?")[0];
+
+                connectionString = $"server={connHost};Uid={connUser};Pwd={connPass};Database={connDb};sslmode=Prefer;Trust Server Certificate=true";
+            }
+
             services.AddDbContext<ValheimBlueprintStoreContext>(opt => opt.UseNpgsql(connectionString));
 
             services.AddControllers();
